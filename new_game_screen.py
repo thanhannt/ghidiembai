@@ -15,7 +15,7 @@ def ok_click(player_names):
     st_javascript(js_set_section, key="new_game_game_section")
     st_javascript(js_clear_results, key="new_game_game_result_list")
     st.session_state.screen = "game"
-    st.rerun()
+    # st.rerun()
 
 def new_game_screen():
     st.title("New Game")
@@ -27,9 +27,9 @@ def new_game_screen():
         try:
             game_section = json.loads(game_section_json)
         except Exception:
-            game_section = ['','','','']
+            game_section = []
     else:
-        game_section = ['','','','']
+        game_section = []
     player_names = []
     for item in game_section:
         if item and 'name' in item:
