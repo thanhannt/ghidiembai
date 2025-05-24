@@ -28,6 +28,8 @@ def new_game_screen():
             game_section = json.loads(game_section_json)
         except Exception:
             game_section = ['','','','']
+    else:
+        game_section = ['','','','']
     player_names = []
     for item in game_section:
         if item and 'name' in item:
