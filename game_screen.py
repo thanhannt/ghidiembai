@@ -3,8 +3,12 @@ from streamlit_javascript import st_javascript
 import json
 import pandas as pd
 
+def single_row_selection_callback():
+    st.session_state["mp_single_row_selection_callback"] = True
+
+
 def game_screen():
-    st.title("Game")
+    st.title("Đang chơi")
     # Load game_section and game_result_list from window.localStorage
     js_code_section = "window.localStorage.getItem('game_section')"
     js_code_results = "window.localStorage.getItem('game_result_list')"
@@ -16,7 +20,6 @@ def game_screen():
         # st.session_state.screen = "main"
         # st.rerun()
         return
-    # st.info(game_section_json)
 
     game_section = json.loads(game_section_json)
     game_result_list = []
@@ -41,7 +44,7 @@ def game_screen():
     st_javascript(js_update_section, key="game_game_section_update")
 
     # Table display
-    st.markdown("#### Scores")
+    st.markdown("#### Tổng điểm hiện tại:")
     # Convert to a single dictionary inside a list
     converted = [{item["name"]: item["score"] for item in game_section}]
 
@@ -49,29 +52,45 @@ def game_screen():
     df = pd.DataFrame(converted)
 
     st.table(df)
+    
     css = r'''
         <style>
             .stMainBlockContainer { padding: 2rem 1rem 2rem; }
             table th {width: 20% !important;}
             table td {text-align: center !important;}
             div[class^='st-key'], div[class*='st-key']{height:0px;}
+            div[class^='st-key'] div, div[class*='st-key'] div{height:0px;}
         </style>
     '''
     st.markdown(css, unsafe_allow_html=True)
 
     if game_result_list:
-        st.markdown("##### Previous Rounds")
+        st.markdown("##### Các lượt chơi:")
         df = pd.DataFrame(columns=df.columns)
 
         for idx, round_scores in enumerate(game_result_list):
-            row = [str(round_scores[i]) for i in range(4)]
-            df.loc[len(df)] = row
-        st.table(df)
+            df.loc[len(df)] = [str(round_scores[i]) for i in range(4)]
+        # st.table(df)
+        event = st.dataframe(
+            df,
+            on_select=single_row_selection_callback,
+            selection_mode="single-row",
+        )
+
+        modules = event.selection.rows
+        
+        if st.session_state.get("mp_single_row_selection_callback", False) is True:
+            st.session_state["mp_single_row_selection_callback"] = False
+            st.session_state["mp_selected_id"] = modules[0] if len(modules) > 0 else None
+            if st.session_state["mp_selected_id"] is not None:
+                st.cache_data.clear()
+                st.session_state.screen = "edit_game_result"
+                st.rerun()
 
     col_end, col_add = st.columns([1,1])
-    if col_end.button("End Game"):
+    if col_end.button("Kết thúc"):
         st.session_state.screen = "main"
         st.rerun()
-    if col_add.button("Add"):
+    if col_add.button("Thêm điểm"):
         st.session_state.screen = "game_result"
         st.rerun()

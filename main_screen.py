@@ -4,7 +4,7 @@ import json
 import pandas as pd
 
 def main_screen():
-    st.title("Game Score")
+    st.title("Ghi điểm")
     # Load game_section from window.localStorage
     js_code = "window.localStorage.getItem('game_section')"
     game_section_json = st_javascript(js_code, key="main_game_section")
@@ -16,7 +16,7 @@ def main_screen():
             game_section = None
 
     if game_section:
-        st.subheader("Current Game")
+        st.subheader("Đang chơi:")
         # Convert to a single dictionary inside a list
         converted = [{item["name"]: item["score"] for item in game_section}]
 
@@ -30,6 +30,7 @@ def main_screen():
                 table th {width: 20% !important;}
                 table td {text-align: center !important;}
                 div[class^='st-key'], div[class*='st-key']{height:0px;}
+                div[class^='st-key'] div, div[class*='st-key'] div{height:0px;}
             </style>
         '''
         st.markdown(css, unsafe_allow_html=True)
@@ -37,8 +38,8 @@ def main_screen():
         st.title("No current game. Start a new game!")
 
     col_new, col_open = st.columns([1,1])
-    new_clicked = col_new.button("New Game")
-    open_clicked = col_open.button("Open Game")
+    new_clicked = col_new.button("Chơi lại")
+    open_clicked = col_open.button("Mở điểm cũ")
 
     if new_clicked:
         st.session_state.screen = "new_game"
