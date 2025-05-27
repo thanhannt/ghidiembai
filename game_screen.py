@@ -63,6 +63,9 @@ def game_screen():
         </style>
     '''
     st.markdown(css, unsafe_allow_html=True)
+    col_end, col_add = st.columns([1,1])
+    end_btn = col_end.button("Kết thúc")
+    add_btn = col_add.button("Thêm điểm")
 
     if game_result_list:
         st.markdown("##### Các lượt chơi:")
@@ -87,10 +90,9 @@ def game_screen():
                 st.session_state.screen = "edit_game_result"
                 st.rerun()
 
-    col_end, col_add = st.columns([1,1])
-    if col_end.button("Kết thúc"):
+    if end_btn:
         st.session_state.screen = "main"
         st.rerun()
-    if col_add.button("Thêm điểm"):
+    if add_btn:
         st.session_state.screen = "game_result"
         st.rerun()
